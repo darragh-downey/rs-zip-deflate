@@ -53,14 +53,24 @@ async fn deflate(tmp: File) -> Result<(), String> {
             continue;
         }
 
-        let ext = name.extension().and_then(OsStr::to_str);
+        let ext = name.extension()
+            .and_then(OsStr::to_str);
         if ext != Some("xml") {
             println!("skipping {} as not xml file", name.display());
             continue;
         }
 
+        let n = match name.file_name().and_then(OsStr::to_str) {
+            Some(n) => n,
+            _ => {
+                println!("appears to not be a file - should skip ");
+                continue;
+            },
+        };
+
         println!("continuing to process {}", name.display());
-        let dest_path = local_path.join(name);
+
+        let dest_path = local_path.join(n);
 
         // create file
         let mut f = File::create(dest_path)
